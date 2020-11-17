@@ -1,6 +1,6 @@
 {
 	"id": "sftp-python",
-	"version": "0.0.2",
+	"version": "1.0.0",
 	"meta": {
 		"label": "SFTP Python Connector",
 		"description": "SFTP Connector for synking folders and exporting datasets . supports proxies",
