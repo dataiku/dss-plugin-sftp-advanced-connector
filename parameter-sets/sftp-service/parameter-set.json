@@ -1,0 +1,113 @@
+{
+    "meta" : {
+        "label": "SFTP service",
+        "description": "Add a new sftp Server As Datasource data source",
+        "icon": "icon-puzzle-piece"
+    },
+    "defaultDefinableInline": true,
+    "defaultDefinableAtProjectLevel": true,
+    "params": [
+        {
+          "name": "hostname",
+          "label": "hostname",
+          "type": "STRING",
+          "description":"SFTP hostname"
+        },
+        {
+          "name": "port",
+          "label": "port",
+          "type": "INT",
+          "defaultValue" : 22,
+          "description":"SFTP port"
+        },
+        {
+            "name": "authentication_option",
+            "label": "SSH authentication",
+            "type": "SELECT",
+            "defaultValue" : "password",
+            "selectChoices": [
+                {
+                    "value": "password",
+                    "label": "password"
+                },
+                {
+                    "value": "private_key",
+                    "label": "Private key (RSA)"
+                }
+            ]
+        },
+        {
+          "name": "username",
+          "label": "username",
+          "type": "STRING",
+          "description":"SFTP username"
+        },
+        {
+          "name": "password",
+          "label": "password",
+          "type": "PASSWORD",
+          "description":"SFTP password",
+          "visibilityCondition": "model.authentication_option == 'password'"
+        },
+        {
+          "name": "private_key",
+          "label": "ssh private key",
+          "type": "STRING",
+          "description": "fle path for private key",
+          "visibilityCondition": "model.authentication_option == 'private_key'"
+        },
+        {
+            "name": "proxy_option",
+            "type": "SELECT",
+            "defaultValue" : "none",
+            "selectChoices": [
+                {
+                    "value": "none",
+                    "label": "No proxy"
+                },
+                {
+                    "value": "sock5",
+                    "label": "Access via sock5 proxy"
+                },
+                {
+                    "value": "http",
+                    "label": "Access via HTTP proxy"
+                }
+            ]
+        },
+        {
+          "name": "proxy_host",
+          "label": "proxy hostname",
+          "type": "STRING",
+          "description":"PROXY hostname",
+          "visibilityCondition": "model.proxy_option != 'none'"
+        },
+        {
+          "name": "proxy_port",
+          "label": "proxy port",
+          "type": "INT",
+          "defaultValue" : 1080,
+          "description":"PROXY port",
+          "visibilityCondition": "model.proxy_option != 'none'"
+        },
+        {
+          "name": "proxy_user",
+          "label": "Proxy user",
+          "type": "STRING",
+          "description":"Leave empty for no authentication",
+          "visibilityCondition": "model.proxy_option != 'none'"
+        },
+        {
+          "name": "proxy_passwd",
+          "label": "Proxy password",
+          "type": "PASSWORD",
+          "visibilityCondition": "model.proxy_option != 'none'"
+        },
+        {
+          "name": "proxy_command",
+          "label": "Proxy commmand",
+          "type": "STRING",
+          "visibilityCondition": "model.proxy_option == 'proxy_command'"
+        }
+    ]
+}

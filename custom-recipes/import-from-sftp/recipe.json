@@ -1,0 +1,39 @@
+{
+  "meta" : {
+    "label" : "Download from SFTP",
+    "description": "Fetch files present on SFTP and store it in a folder",
+    "author" : "Dataiku (Joel Belafa)",
+    "icon": "icon-download",
+    "tags" : ["import", "SFTP"]
+  },
+  "kind" : "PYTHON",
+  "inputRoles" : [
+  ],
+  "outputRoles" : [
+    {
+      "name": "folder_with_data",
+      "label": "Folder that will receive the data",
+      "arity": "UNARY",
+      "required": true,
+      "acceptsDataset": false,
+      "acceptsManagedFolder": true
+    }
+  ],
+  "params": [
+    {
+        "name": "sftpService",
+        "label": "SFTP service",
+        "type": "PRESET",
+        "parameterSetId" : "sftp-service",
+        "description": "Choose among SFTP servers defined by administrators",
+        "mandatory" : true
+    },
+    {
+      "name": "sftp_root_path",
+      "label": "SFTP_source_path",
+      "type": "STRING",
+      "description": "directory where data has to be pulled from",
+      "mandatory" : true
+    }
+  ]
+}

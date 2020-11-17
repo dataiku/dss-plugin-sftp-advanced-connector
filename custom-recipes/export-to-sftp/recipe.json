@@ -1,0 +1,47 @@
+{
+  "meta" : {
+    "label" : "export to SFTP",
+    "description": "Upload a local Folder to a SFTP serveur",
+    "author" : "Dataiku (Joel Belafa)",
+    "icon" : "icon-sync-file",
+    "tags" : ["import", "SFTP"]
+  },
+  "kind" : "PYTHON",
+  "inputRoles" : [
+      {
+      "name": "folder_with_data",
+      "label": "Folder that contains data",
+      "arity": "UNARY",
+      "required": true,
+      "acceptsDataset": false,
+      "acceptsManagedFolder": true
+    }
+  ],
+  "outputRoles" : [
+    {
+      "name": "export_details",
+      "label": "export report",
+      "arity": "UNARY",
+      "required": false,
+      "acceptsDataset": true,
+      "acceptsManagedFolder": false
+    }
+  ],
+  "params": [
+    {
+        "name": "sftpService",
+        "label": "SFTP service",
+        "type": "PRESET",
+        "parameterSetId" : "sftp-service",
+        "description": "Choose among SFTP serveurs defined by administrator",
+        "mandatory" : true
+    },
+    {
+      "name": "sftp_root_path",
+      "label": "SFTP directory",
+      "type": "STRING",
+      "description": "directory where data will be sent",
+      "mandatory" : true
+    }
+  ]
+}

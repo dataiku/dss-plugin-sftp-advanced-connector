@@ -1,0 +1,59 @@
+{
+  "meta" : {
+    "label" : "Export to SFTP",
+    "description": "Export dataset to sftp",
+    "author" : "Dataiku (Joel Belafa)",
+    "tags" : ["export", "SFTP"]
+  },
+  "exportBehavior" : "MANAGES_OUTPUT",
+  "exportOptions": [
+      {
+          "label" : "Export to SFTP"
+      }
+  ],
+  "params": [
+    {
+        "name": "sftpService",
+        "label": "SFTP service",
+        "type": "PRESET",
+        "parameterSetId" : "sftp-service",
+        "description": "Choose among SFTP serveurs defined by administrator",
+        "mandatory" : true
+    },
+    {
+      "name": "sftp_root_path",
+      "label": "SFTP_source_path",
+      "type": "STRING",
+      "description": "directory where data will be sent",
+      "mandatory" : true
+    },
+    {
+      "name": "filename",
+      "label": "filename under directory",
+      "type": "STRING",
+      "description": "filename where data will be sent without extension",
+      "mandatory" : true
+    },
+    {
+      "name": "delimiter",
+      "label": "Separator",
+      "type": "STRING",
+      "defaultValue" : ",",
+      "mandatory" : true
+    },
+    {
+      "name": "bufsize",
+      "label": "buffer Size",
+      "type": "INT",
+      "defaultValue" : 1000,
+      "description":"SFTP bufsize"
+    },
+    {
+      "name": "headers",
+      "label": "Add header to file",
+      "type": "BOOLEAN",
+      "mandatory" : true,
+      "defaultValue" : true
+    }
+  ]
+}

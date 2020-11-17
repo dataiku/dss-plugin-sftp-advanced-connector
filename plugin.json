@@ -1,17 +1,13 @@
 {
-    "id": "your-plugin-id",
-    "version": "0.1.0",
-    "meta": {
-        "label": "Your plugin label",
-        "category": "Your category (optional)",
-        "description": "Your description (keep it short and simple)",
-        "author": "Organization (firstName LASTNAME)",
-        "icon": "icon-font-awesome-3.2.1",
-        "licenseInfo": "Apache Software License",
-        "url": "https://www.dataiku.com/product/plugins/your-plugin-id/",
-        "tags": [
-            "myTag"
-        ],
-        "supportLevel": "NOT_SUPPORTED"
-    }
+	"id": "sftp-python",
+	"version": "0.0.2",
+	"meta": {
+		"label": "SFTP Python Connector",
+		"description": "SFTP Connector for synking folders and exporting datasets . supports proxies",
+		"author": "Dataiku (Joel Belafa)",
+		"icon": "icon-beaker",
+		"licenseInfo": "Apache Software License",
+		"url": "https://www.dataiku.com/dss/plugins/info/sftp-exporter.html",
+		"tags": ["Connector"]
+	}
 }
