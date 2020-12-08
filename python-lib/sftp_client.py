@@ -171,6 +171,17 @@ class SftpConnector(object):
         sftp = self.get_sftp_client()
         return sftp.open(filename,mode,bufsize=bufsize)
 
+    def mkdir(directory):
+        sftp = self.get_sftp_client()
+        sftp.mkdir(directory)
+        return
+        
+    def rename(previous_file,new_file):
+        sftp = self.get_sftp_client()
+        sftp.rename(previous_file,new_file)
+        return
+
+
     def upload_dir(self,local_dir,remote_dir):
 
         files_updated = []
