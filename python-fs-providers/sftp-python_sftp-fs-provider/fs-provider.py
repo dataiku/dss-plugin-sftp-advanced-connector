@@ -53,39 +53,41 @@ class CustomFSProvider(FSProvider):
         if the object doesn't exist
         """
         full_path = self.get_full_path(path)
-        if not os.path.exists(full_path):
+        if not self.sftp.exists(full_path):
             return None
-        if os.path.isdir(full_path):
+        attrs = self.sftp.stat(full_path)
+        if self.sftp.isdir(full_path):
             return {'path': self.get_lnt_path(path), 'size':0, 'lastModified':int(os.path.getmtime(full_path)) * 1000, 'isDirectory':True}
         else:
-            return {'path': self.get_lnt_path(path), 'size':os.path.getsize(full_path), 'lastModified':int(os.path.getmtime(full_path)) * 1000, 'isDirectory':False}
+            return {'path': self.get_lnt_path(path), 'size':attrs.st_size, 'lastModified':int(attrs.st_mtime) * 1000, 'isDirectory':False}
             
     def set_last_modified(self, path, last_modified):
         """
         Set the modification time on the object denoted by path. Return False if not possible
         """
-        full_path = self.get_full_path(path)
-        os.utime(full_path, (os.path.getatime(full_path), last_modified / 1000))
-        return True
+        return False
         
     def browse(self, path):
         """
         List the file or directory at the given path, and its children (if directory)
         """
         full_path = self.get_full_path(path)
-        if not os.path.exists(full_path):
+        if not self.sftp.exists(full_path):
             return {'fullPath' : None, 'exists' : False}
-        elif os.path.isfile(full_path):
-            return {'fullPath' : self.get_lnt_path(path), 'exists' : True, 'directory' : False, 'size' : os.path.getsize(full_path)}
+        elif self.sftp.isfile(full_path):
+
+            attrs = self.sftp.stat(full_path)
+            return {'fullPath' : self.get_lnt_path(path), 'exists' : True, 'directory' : False, 'size' : attrs.st_size}
         else:
             children = []
-            for sub in os.listdir(full_path):
+            for sub in self.sftp.listdir(full_path):
                 sub_full_path = os.path.join(full_path, sub)
+                attrs = self.sftp.stat(sub_full_path)
                 sub_path = self.get_lnt_path(os.path.join(path, sub))
-                if os.path.isdir(sub_full_path):
+                if self.sftp.isdir(sub_full_path):
                     children.append({'fullPath' : sub_path, 'exists' : True, 'directory' : True, 'size' : 0})
                 else:
-                    children.append({'fullPath' : sub_path, 'exists' : True, 'directory' : False, 'size' : os.path.getsize(sub_full_path)})
+                    children.append({'fullPath' : sub_path, 'exists' : True, 'directory' : False, 'size' : attrs.st_size})
             return {'fullPath' : self.get_lnt_path(path), 'exists' : True, 'directory' : True, 'children' : children}
             
     def enumerate(self, path, first_non_empty):
@@ -97,14 +99,22 @@ class CustomFSProvider(FSProvider):
         full_path = self.get_full_path(path)
         if not os.path.exists(full_path):
             return None
-        if os.path.isfile(full_path):
-            return [{'path':self.get_lnt_path(path), 'size':os.path.getsize(full_path), 'lastModified':int(os.path.getmtime(full_path)) * 1000}]
+        if self.sftp.isfile(full_path):
+            attrs = self.sftp.stat(full_path)
+            return [{'path':self.get_lnt_path(path), 'size':attrs.st_size, 'lastModified':int(attrs.st_mtime) * 1000}]
         paths = []
-        for root, dirs, files in os.walk(full_path):
-            for file in files:
-                full_sub_path = os.path.join(root, file)
-                sub_path = full_sub_path[len(os.path.join(self.sftp_root_path, self.root)):]
-                paths.append({'path':self.get_lnt_path(sub_path), 'size':os.path.getsize(full_sub_path), 'lastModified':int(os.path.getmtime(full_sub_path)) * 1000})
+
+        for afile in self.sftp.listdir(full_path):
+            full_sub_path = os.path.join(full_path, afile)
+            sub_path = full_sub_path[len(os.path.join(self.sftp_root_path, self.root)):]
+
+            attrs = self.sftp.stat(full_path)
+            paths.append({
+                'path':self.get_lnt_path(sub_path), 
+                'size':attrs.st_size, 
+                'lastModified':int(attrs.st_mtime) * 1000
+                })
+
         return paths
         
     def delete_recursive(self, path):
@@ -112,13 +122,13 @@ class CustomFSProvider(FSProvider):
         Delete recursively from path. Return the number of deleted files (optional)
         """
         full_path = self.get_full_path(path)
-        if not os.path.exists(full_path):
+        if not self.sftp.sftp_file_exists(full_path):
             return 0
-        elif os.path.isfile(full_path):
-            os.remove(full_path)
+        elif self.sftp.isfile(full_path):
+            self.sftp.remove(full_path)
             return 1
         else:
-            shutil.rmtree(full_path)
+            self.sftp.rmtree(full_path)
             return 0
             
     def move(self, from_path, to_path):
