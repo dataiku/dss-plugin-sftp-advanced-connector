@@ -22,19 +22,12 @@
     */
     "params": [
         {
-          "name": "sftp_root_path",
-          "label": "SFTP_source_path",
-          "type": "STRING",
-          "description": "directory where data will be sent",
-          "mandatory" : true
-        },
-        {
-            "name": "parameter2",
-            "type": "INT",
-            "defaultValue" : 42
-            /* Note that standard json parsing will return it as a double in Python (instead of an int), so you need to write
-               int(self.config()['parameter2'])
-            */
+            "name": "sftpService",
+            "label": "SFTP service",
+            "type": "PRESET",
+            "parameterSetId" : "sftp-service",
+            "description": "Choose among SFTP serveurs defined by administrator",
+            "mandatory" : true
         },
         {
           "name": "bufsize",
@@ -42,21 +35,6 @@
           "type": "INT",
           "defaultValue" : 1000,
           "description":"SFTP bufsize"
-        },
-        /* A "SELECT" parameter is a multi-choice selector. Choices are specified using the selectChoice field*/
-        {
-            "name": "parameter8",
-            "type": "SELECT",
-            "selectChoices": [
-                {
-                    "value": "val_x",
-                    "label": "display name for val_x"
-                },
-                {
-                    "value": "val_y",
-                    "label": "display name for val_y"
-                }
-            ]
         }
     ]
 }

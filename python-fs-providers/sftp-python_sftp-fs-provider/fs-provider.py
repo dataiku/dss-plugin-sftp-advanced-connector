@@ -1,7 +1,7 @@
 # This file is the actual code for the custom Python FS provider sftp-python_sftp-fs-provider
 
 from dataiku.fsprovider import FSProvider
-import os, shutil
+import os, shutil,sys
 import tempfile
 from sftp_client import SftpConnector
 
@@ -20,7 +20,7 @@ class CustomFSProvider(FSProvider):
         self.root = root
 
         self.sftp_service = config.get('sftpService')
-        self.sftp_root_path = config.get('sftp_root_path')
+        self.sftp_root_path = config.get('sftpService').get('managed_folder_path')
 
         self.bufsize = config.get('bufsize')
         self.sftp = SftpConnector(self.sftp_service)
@@ -122,7 +122,7 @@ class CustomFSProvider(FSProvider):
         Delete recursively from path. Return the number of deleted files (optional)
         """
         full_path = self.get_full_path(path)
-        if not self.sftp.sftp_file_exists(full_path):
+        if not self.sftp.exists(full_path):
             return 0
         elif self.sftp.isfile(full_path):
             self.sftp.remove(full_path)
@@ -137,7 +137,7 @@ class CustomFSProvider(FSProvider):
         """
         full_from_path = self.get_full_path(from_path)
         full_to_path = self.get_full_path(to_path)
-        if self.sftp.sftp_file_exists(full_from_path):
+        if self.sftp.exists(full_from_path):
             if from_path != to_path:
                 self.sftp.rename(full_from_path, full_to_path)
             return True
@@ -149,23 +149,26 @@ class CustomFSProvider(FSProvider):
         Read the object denoted by path into the stream. Limit is an optional bound on the number of bytes to send
         """
         full_path = self.get_full_path(path)
-        if not self.sftp.sftp_file_exists(full_path):
+        if not self.sftp.exists(full_path):
             raise Exception('Path doesn t exist')
-        with self.sftp.open(target_file,mode="r",bufsize=self.bufsize) as f:
+        with self.sftp.open(full_path,mode="r",bufsize=self.bufsize) as f:
             shutil.copyfileobj(f, stream,self.bufsize)
 
         return
-            
+    
+
+
     def write(self, path, stream):
         """
         Write the stream to the object denoted by path into the stream
         """
+
         full_path = self.get_full_path(path)
         full_path_parent = os.path.dirname(full_path)
+        print >> sys.stderr,  "full_path_parent "+ full_path_parent
 
-        if not self.sftp.sftp_file_exists(full_path_parent):
-            self.sftp.mkdir(full_path_parent)
+        if not self.sftp.exists(full_path_parent):
+            self.sftp.mkdir(full_path_parent,recurse=True)
 
-        self.openedFile = self.sftp.open(full_path,mode="w",bufsize=self.bufsize)
-        with self.sftp.open(target_file,mode="wb",bufsize=self.bufsize) as f:
+        with self.sftp.open(full_path,mode="wb",bufsize=self.bufsize) as f:
             shutil.copyfileobj(stream, f,self.bufsize)
