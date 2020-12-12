@@ -1,11 +1,12 @@
 import paramiko
 import json
-from stat import S_ISDIR
-import os
+from stat import S_ISDIR, S_ISREG
+import os,sys
 import socks # for sock5 
 import socket # for  HTTP proxy tunnels
 import logging
 from base64 import b64encode
+import tempfile
 
 logging.basicConfig(loglevel=logging.DEBUG)
 LOG = logging.getLogger("dataiku.sftp")
@@ -52,16 +53,23 @@ class SftpConnector(object):
 
     def isdir(self,path):
         try:
-            return S_ISDIR(self.sftp.stat(path).st_mode)
+            return S_ISDIR(self.stat(path).st_mode)
         except IOError:
             raise
             #Path does not exist, so by definition not a directory
         return False
 
+    def isfile(self,path):
+        try:
+            return S_ISREG(self.stat(path).st_mode)
+        except IOError:
+            raise
+            #Path does not exist, so by definition not a file
+        return False
 
 
-    def sftp_file_exists(self,remote_file):
-
+    def exists(self,remote_file):
+        sftp = self.get_sftp_client()
         try : 
             self.sftp.stat(remote_file)
             return True
@@ -70,7 +78,6 @@ class SftpConnector(object):
             return False
 
         return False
-
 
 
 
@@ -167,16 +174,78 @@ class SftpConnector(object):
         LOG.debug("type of client "+str(type(client)))
         return client
 
-    def open(self,filename,mode="r",bufsize=200):
-        sftp = self.get_sftp_client()
-        return sftp.open(filename,mode,bufsize=bufsize)
 
+    # Override paramiko helper with proxy handler
+    def open(self,filename,mode="r",bufsize=200):
+        print ("open file:"+filename)
+        if "w" in mode and not self.exists(filename) :
+            # This init  remote file and guarrantees concurrency
+            tmpdirname = tempfile.mkdtemp()
+            tmp_file = open(os.path.join(tmpdirname,os.path.basename(filename)),"a")
+            tmp_file.close()
+            self.get_sftp_client().put(tmp_file.name,filename)
+            os.remove(tmp_file.name)
+
+        return self.get_sftp_client().open(
+            filename,mode,bufsize=bufsize
+            )
+
+
+    def mkdir(self,directory,recurse=False):
+        print >> sys.stderr,  "directory: "+ directory
+
+        if recurse:
+            parent_dir = os.path.abspath(os.path.join(directory, os.pardir))
+            if not self.exists(parent_dir):
+                self.mkdir(parent_dir,recurse)
+
+        self.get_sftp_client().mkdir(directory)
+        return
+
+    def rename(self,previous_file,new_file):
+        self.get_sftp_client().rename(previous_file,new_file)
+        return
+
+    def stat(self,path):
+        print ("stat file")
+        return self.get_sftp_client().stat(path)
+
+    def lstat(self,path):
+        return self.get_sftp_client().lstat(path)
+
+    def listdir(self,remote_dir):
+        return self.get_sftp_client().listdir(remote_dir)
+
+    def remove(self, path):
+        LOG.debug("removing file:"+path)
+        self.get_sftp_client().remove(path)
+        return
+
+    def rmdir(self,path):
+        LOG.debug("removing directory:"+path)
+        self.get_sftp_client().rmdir(path)
+        return 
+
+    def rmtree(self,path):
+        sftp = self.get_sftp_client()
+
+        if not sftp.exists(path):
+            return 
+        elif sftp.isdir(path):
+            for p in sftp.listdir(path):
+                self.rmtree(os.path.join(path,p))
+            self.rmdir(path)
+        elif sftp.isfile(path):
+            sftp.remove(path)
+        return
+
+    # Bulk loaders for better performance (from local FS only)
     def upload_dir(self,local_dir,remote_dir):
 
         files_updated = []
         sftp = self.get_sftp_client()
 
-        if not os.path.exists(local_dir) or not self.sftp_file_exists(remote_dir):
+        if not os.path.exists(local_dir) or not self.exists(remote_dir):
             raise ValueError(local_dir+" and "+ remote_dir+" should exists ")
 
         if not os.path.isdir(local_dir) or not self.isdir(remote_dir):
@@ -193,18 +262,18 @@ class SftpConnector(object):
             l_target = os.path.join(local_dir,_file)
 
             if os.path.isdir(l_target):
-                if not self.sftp_file_exists(r_target):
+                if not self.exists(r_target):
                     sftp.mkdir(r_target)
                 files_updated.extend(self.upload_dir(l_target,r_target))
             else :
                 l_size = os.path.getsize(l_target)
 
-                if not self.sftp_file_exists(r_target):
+                if not self.exists(r_target):
                     print (" upload %s  to %s ") % (l_target,r_target)
                     sftp.put(l_target,r_target)
                     files_updated.append(r_target)
                 else :
-                    attrs = sftp.stat(r_target)
+                    attrs = self.stat(r_target)
                     r_size = attrs.st_size
                     try: 
                         if l_size != r_size :
@@ -230,7 +299,7 @@ class SftpConnector(object):
 
         sftp = self.get_sftp_client()
 
-        if not os.path.exists(local_dir) or not self.sftp_file_exists(remote_dir):
+        if not os.path.exists(local_dir) or not self.exists(remote_dir):
             raise ValueError(local_dir+" and "+ remote_dir+" should exists ")
 
         if not os.path.isdir(local_dir) or not self.isdir(remote_dir):

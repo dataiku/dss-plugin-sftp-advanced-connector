@@ -1,0 +1,40 @@
+/* This file is the descriptor for the Custom python FS provider sftp-python_sftp-fs-provider */
+{
+    "meta" : {
+        // label: name of the file system type as displayed, should be short
+        "label": "Custom FS provider sftp-python_sftp-fs-provider",
+
+        // description: longer string to help end users understand what this file system is
+        "description": "",
+
+        // icon: must be one of the FontAwesome 3.2.1 icons, complete list here at https://fontawesome.com/v3.2.1/icons/
+        "icon": "icon-puzzle-piece"
+    },
+
+    /* params:
+    DSS will generate a formular from this list of requested parameters.
+    Your component code can then access the value provided by users using the "name" field of each parameter.
+
+    Available parameter types include:
+    STRING, INT, DOUBLE, BOOLEAN, DATE, SELECT, TEXTAREA, PRESET and others.
+
+    For the full list and for more details, see the documentation: https://doc.dataiku.com/dss/latest/plugins/reference/params.html
+    */
+    "params": [
+        {
+            "name": "sftpService",
+            "label": "SFTP service",
+            "type": "PRESET",
+            "parameterSetId" : "sftp-service",
+            "description": "Choose among SFTP serveurs defined by administrator",
+            "mandatory" : true
+        },
+        {
+          "name": "bufsize",
+          "label": "buffer Size",
+          "type": "INT",
+          "defaultValue" : 1000,
+          "description":"SFTP bufsize"
+        }
+    ]
+}

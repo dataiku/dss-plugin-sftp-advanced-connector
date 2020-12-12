@@ -21,6 +21,13 @@
           "description":"SFTP port"
         },
         {
+          "name": "managed_folder_path",
+          "label": "Path for managed folders",
+          "type": "STRING",
+          "mandatory" : true,
+          "description":"When dataiku creates folders , they would be stored in this location"
+        },
+        {
             "name": "authentication_option",
             "label": "SSH authentication",
             "type": "SELECT",
