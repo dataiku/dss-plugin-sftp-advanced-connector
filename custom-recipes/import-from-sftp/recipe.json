@@ -45,7 +45,7 @@
     },
     {
       "name": "sftp_root_path",
-      "label": " (sub) directory to download",
+      "label": "file or (sub) directory to download",
       "type": "STRING",
       "description": "directory where data will be sent",
       "mandatory" : true

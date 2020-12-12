@@ -27,23 +27,24 @@ dest_folder = dataiku.Folder(get_output_names_for_role('folder_with_data')[0])
 
 
 # Helpers
-def download_directory(directory):
-    details = source_folder.get_path_details(directory)
-    print("start downloading directory: {}".format(details.get("fullPath")))
-    for child in details.get("children"):
-        if (child.get("directory")):
-            download_directory(child.get("fullPath"))
-        else: 
-            print("start downloading file: {}".format(child.get("fullPath")))
-            with source_folder.get_download_stream(child.get("fullPath")) as source_file:
-                with dest_folder.get_writer(child.get("fullPath").replace(sftp_root_path,"/",1)) as dest_file:
-                    shutil.copyfileobj(source_file, dest_file,bufsize)
-            print("succeded downloading file: {}".format(child.get("fullPath")))
-    print("Finished downloading directory: {}".format(details.get("fullPath")))
+def sync_path(origin):
+    details = source_folder.get_path_details(origin)
+    print("start downloading : {}".format(details.get("fullPath")))
+    
+    if (details.get("directory")):
+        for child in details.get("children"):
+            sync_path(child.get("fullPath"))
+    else:
+        clone_path = details.get("fullPath").replace(sftp_root_path,"",1) or sftp_root_path
+        with source_folder.get_download_stream(details.get("fullPath")) as source_file:
+            with dest_folder.get_writer(clone_path) as dest_file:
+                shutil.copyfileobj(source_file, dest_file,bufsize)
+    
+    print("Finished downloading: {}".format(details.get("fullPath")))
     return
 
 # MAIN PROCESSING
-download_directory(sftp_root_path)
+sync_path(sftp_root_path)
 
 
 print ("Recipe complete")
