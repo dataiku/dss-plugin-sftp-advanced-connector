@@ -8,6 +8,14 @@
   },
   "kind" : "PYTHON",
   "inputRoles" : [
+    {
+      "name": "sftp_source_folder",
+      "label": "Folder that contains data",
+      "arity": "UNARY",
+      "required": true,
+      "acceptsDataset": false,
+      "acceptsManagedFolder": true
+    }
   ],
   "outputRoles" : [
     {
@@ -29,10 +37,17 @@
         "mandatory" : true
     },
     {
+      "name": "bufsize",
+      "label": "buffer Size",
+      "type": "INT",
+      "defaultValue" : 1000,
+      "description":"SFTP bufsize"
+    },
+    {
       "name": "sftp_root_path",
-      "label": "SFTP_source_path",
+      "label": "file or (sub) directory to download",
       "type": "STRING",
-      "description": "directory where data has to be pulled from",
+      "description": "directory where data will be sent",
       "mandatory" : true
     }
   ]
