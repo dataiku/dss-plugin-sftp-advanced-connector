@@ -8,6 +8,14 @@
   },
   "kind" : "PYTHON",
   "inputRoles" : [
+    {
+      "name": "sftp_source_folder",
+      "label": "Folder that contains data",
+      "arity": "UNARY",
+      "required": true,
+      "acceptsDataset": false,
+      "acceptsManagedFolder": true
+    }
   ],
   "outputRoles" : [
     {
