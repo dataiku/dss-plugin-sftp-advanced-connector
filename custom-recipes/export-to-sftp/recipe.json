@@ -19,12 +19,12 @@
   ],
   "outputRoles" : [
     {
-      "name": "export_details",
-      "label": "export report",
+      "name": "sftp_folder",
+      "label": "Folder that will receive the data",
       "arity": "UNARY",
-      "required": false,
-      "acceptsDataset": true,
-      "acceptsManagedFolder": false
+      "required": true,
+      "acceptsDataset": false,
+      "acceptsManagedFolder": true
     }
   ],
   "params": [
@@ -35,10 +35,16 @@
         "parameterSetId" : "sftp-service",
         "description": "Choose among SFTP serveurs defined by administrator",
         "mandatory" : true
+    },{
+      "name": "bufsize",
+      "label": "buffer Size",
+      "type": "INT",
+      "defaultValue" : 1000,
+      "description":"SFTP bufsize"
     },
     {
       "name": "sftp_root_path",
-      "label": "SFTP directory",
+      "label": "file or (sub) directory to download",
       "type": "STRING",
       "description": "directory where data will be sent",
       "mandatory" : true
