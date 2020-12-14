@@ -49,45 +49,65 @@ You can also set or restrict the access or the use of this preset by defining :
 * the owner of this SFTP Service. 
 * a list of groups that can use your SFTP Service via the authorization "Can use preset"
 
+## Path for managed folders
+
+Froom version 2.0 , you will be requested a Root path that is browsable by your SFTP user. 
+The managed folders will be created from this location. 
+
+
+
 # Usage 
 
 This plugin contains 3 main features : 
+* A File system provider that allows to create Dataiku folders on SFTP
 * A recipe that performs a "Download from SFTP" directories into a local Dataiku Folder
 * A recipe that performs an "Exprot to SFTP" directory from the content of a Dataiku Folder
 * An exporter to sftp that allows to upload the content of a Dataiku Dataset
 
 
+## SFTP Folder 
+
+Once your installation is complete, you can create a folder in your project like any other source by going to your project flow and click on "dataset" on the top right (or flow > dataset> new dataset from top bar) , then select folder change the  "store into" section for "Plugin-sftp-python > Custom FS provider". 
+
+The folder is provided with all the base functionality of folders. (browse, upload , download , preview )
+
+Note that by default DSS will generate a default path withing the **path for managed folder** of your **SFTP Service**  with parameter "/${projectKey}/${odbId}". if you mean to create a dataiku folder on a specific location you need to change that path into the folder setings. 
+
+ 
+
 ## Recipe : Download from SFTP 
 
-This plugin recipe allows any user to download recursively the content of a Directory in your SFTP server and store it in a local Dataiku folder. This dataiku folder will be created as an output of the dataset 
+This plugin recipe allows any user to download recursively the content of a Folder in your SFTP server and store it in another Dataiku folder. 
+
 
 
 The recipes is accessible from the workflow by click on " Recipes (at the top of the workflow) > SFTP Python Connector > Download from SFTP  ".
 
-You will be requested to create a Folder as an output for the recipe, This folder MUST be created from a local filesystem connection as it is the only source supported. 
 
-Once your recipe is created you need to select : 
-* The SFTP service that you wish to use (or completely define the informations of your SFTP server based on the same filead as the SFTP service)
-* the path of the directory you wish to download
+The input dataset must be created before initialising the recipe  
+You will be requested to create a Folder as an output for the recipe,
+
+Once your recipe is created you need to define the path of the file or directory you wish to download (leave "/" if you wich to download the entire folder)
 
 
-After the first execution that will fully download the entire SFTP directory , the files will be refreshed in a smart way according to the following rules : 
-* any new remote element  will be downloaded
-* if the source file is updated on the SFTP , it will be download 
-* if the remote and local files are the same (size and creation date) they will be ignored. 
+After the first execution that will entirely download the content requested , the files will be refreshed in a smart way according to the following rules : 
+* any new input file will be downloaded
+* if the source file is updated on the SFTP , it will be downloaded
+* if the source and destination files are the same (size and creation date) they will be ignored. 
 
 Beware that the folder is not emptied at each execution and will be instead keeping the content of the previous dowload  unless there a file to update. if you wish to clear the the folder content at each execution you need to do it manually via the action clear or to use a scenario step "Clear". 
 
 ## Recipe : Exprot to SFTP 
 
-This plugin recipe pushes the content of a DSS local Folder to a SFTP server the selected directory, it will also create a list of the files downloaded and store it into an output dataset
+This plugin recipe pushes the content of a DSS  Folder to a SFTP folder . 
 
-As for the Dowload recipe, this one is accessible from the workflow, on " Recipes (at the top of the workflow) > SFTP Python Connector > Exprot to SFTP ".
+As for the Dowload recipe, this one is accessible from the workflow, on " Recipes (at the top of the workflow) > SFTP Python Connector > Export to SFTP"
 
-You will be requested to select the source folder that contains the files you wish to upload as an output and a name for the dataset that will containt the list of the files uploaded successfully. 
+Before creating the recipe you need to create the folder in advance. 
+
+You will be requested to select the source folder that contains the files you wish to upload as an input and a the SFTP folder as an output. 
 Once your recipe is created you need to select : 
-* The SFTP service that you wish to use (or completely define the informations of your SFTP server based on the same filead as the SFTP service)
-* the path of the directory you wish to push your files into
+* the path of the file or directory you wish to upload via SFTP (leave "/" if you wich to download the entire folder)
 
 
 After the first execution, the files will be refreshed in a smart way according to the following rules : 
