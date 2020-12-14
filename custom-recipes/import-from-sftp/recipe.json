@@ -29,14 +29,6 @@
   ],
   "params": [
     {
-        "name": "sftpService",
-        "label": "SFTP service",
-        "type": "PRESET",
-        "parameterSetId" : "sftp-service",
-        "description": "Choose among SFTP servers defined by administrators",
-        "mandatory" : true
-    },
-    {
       "name": "bufsize",
       "label": "buffer Size",
       "type": "INT",

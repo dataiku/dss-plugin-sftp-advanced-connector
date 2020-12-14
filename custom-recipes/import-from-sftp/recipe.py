@@ -13,9 +13,6 @@ sftp_service = get_recipe_config()['sftpService']
 sftp_root_path = get_recipe_config()['sftp_root_path']# we keep the name for migration purpose
 bufsize = get_recipe_config()['bufsize']
 
-# Load connector from  python-lib
-sftp_connector = SftpConnector(sftp_service)
-
 # get the full location of local folder
 source_folder = dataiku.Folder(get_input_names_for_role('sftp_source_folder')[0])
 
