@@ -57,7 +57,7 @@ class CustomFSProvider(FSProvider):
             return None
         attrs = self.sftp.stat(full_path)
         if self.sftp.isdir(full_path):
-            return {'path': self.get_lnt_path(path), 'size':0, 'lastModified':int(os.path.getmtime(full_path)) * 1000, 'isDirectory':True}
+            return {'path': self.get_lnt_path(path), 'size':0, 'lastModified':int(attrs.st_mtime) * 1000, 'isDirectory':True}
         else:
             return {'path': self.get_lnt_path(path), 'size':attrs.st_size, 'lastModified':int(attrs.st_mtime) * 1000, 'isDirectory':False}
             
@@ -97,7 +97,7 @@ class CustomFSProvider(FSProvider):
         If the prefix doesn't denote a file or folder, return None
         """
         full_path = self.get_full_path(path)
-        if not os.path.exists(full_path):
+        if not self.sftp.exists(full_path):
             return None
         if self.sftp.isfile(full_path):
             attrs = self.sftp.stat(full_path)
@@ -172,3 +172,19 @@ class CustomFSProvider(FSProvider):
 
         with self.sftp.open(full_path,mode="wb",bufsize=self.bufsize) as f:
             shutil.copyfileobj(stream, f,self.bufsize)
+
+
+
+    def getsize(filename):
+        """Return the size of a file, reported by os.stat()."""
+        return os.stat(filename).st_size
+
+
+    def getmtime(filename):
+        """Return the last modification time of a file, reported by os.stat()."""
+        return os.stat(filename).st_mtime
+
+
+    def getatime(filename):
+        """Return the last access time of a file, reported by os.stat()."""
+        return os.stat(filename).st_atime
