@@ -1,5 +1,11 @@
+# When to use this plugin
+
 
 this is an alternative to the native SFTP downloader|exporter  that supports HTTP and Sock5 proxies. 
+
+Dataiiku is natively provided with a SFTP connector so use this plugin unly if soem of your SFTP serveurs need custom access to SFTP  or if you need to customize other aspects of SSH connection via code . 
+
+Please  beware that some changes could allow similar capabilities in the native connector in the future.  (in that case you will be able to migrate your artifact to another connector easily and keep the structure of your flow untouched. 
 
 
 # Installation 
