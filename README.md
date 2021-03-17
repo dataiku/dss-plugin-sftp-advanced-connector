@@ -1,5 +1,5 @@
 
-this is an alternative to the native SFTP downloader|exporter  that supports Sock5 proxies. 
+this is an alternative to the native SFTP downloader|exporter  that supports HTTP and Sock5 proxies. 
 
 
 # Installation 
