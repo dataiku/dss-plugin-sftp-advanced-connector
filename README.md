@@ -67,7 +67,7 @@ The managed folders will be created from this location.
 This plugin contains 3 main features : 
 * A File system provider that allows to create Dataiku folders on SFTP
 * A recipe that performs a "Download from SFTP" directories into a local Dataiku Folder
-* A recipe that performs an "Exprot to SFTP" directory from the content of a Dataiku Folder
+* A recipe that performs an "Export to SFTP" directory from the content of a Dataiku Folder
 * An exporter to sftp that allows to upload the content of a Dataiku Dataset
 
 
@@ -103,7 +103,7 @@ After the first execution that will entirely download the content requested , th
 
 Beware that the folder is not emptied at each execution and will be instead keeping the content of the previous dowload  unless there a file to update. if you wish to clear the the folder content at each execution you need to do it manually via the action clear or to use a scenario step "Clear". 
 
-## Recipe : Exprot to SFTP 
+## Recipe : Export to SFTP 
 
 This plugin recipe pushes the content of a DSS  Folder to a SFTP folder . 
 
